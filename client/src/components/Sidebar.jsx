@@ -44,8 +44,9 @@ const Sidebar = ({ activeTab, setActiveTab, user }) => {
             />
           </div>
           <div className="text-left overflow-hidden">
-            <p className="text-sm font-bold text-[#2D2A26] truncate">{user?.name || 'Alex Johnson'}</p>
-            <p className="text-xs text-gray-500">Pro Explorer</p>
+            <p className="text-sm font-bold text-[#2D2A26] truncate">{user?.name || 'Guest'}</p>
+            <p className="text-xs text-gray-500">{user ? 'Pro Explorer' : 'Sign in for saved trips'}</p>
+
           </div>
         </div>
       </div>
