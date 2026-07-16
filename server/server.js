@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 const express = require('express');
 const cors = require('cors');
 
@@ -8,10 +8,28 @@ const itineraryRoutes = require('./routes/itineraryRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+].filter(Boolean);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
+      if (localhostPattern.test(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
   })
 );
 app.use(express.json());
