@@ -46,7 +46,7 @@ const AuthScreen = ({ onLogin }) => {
             <Compass size={36} color="white" strokeWidth={1.5} />
           </div>
           <h1 className="text-5xl font-bold text-white mb-4 leading-tight">Discover the magic of Cape Town.</h1>
-          <p className="text-xl text-white/90 font-medium">Your premium AI-powered local companion awaits.</p>
+          <p className="text-xl text-white/90 font-medium">Your premium AI-powered local chatbot companion awaits.</p>
         </div>
       </div>
 
