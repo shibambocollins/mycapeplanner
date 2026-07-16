@@ -24,7 +24,7 @@ Chat with an AI guide, get a real itinerary, save it to your account, and export
 
 | | |
 |---|---|
-| **Frontend** | `PASTE YOUR PRODUCTION VERCEL URL HERE` |
+| **Frontend** | `https://mycapeplanner.vercel.app/` |
 | **Backend health check** | `https://mycapeplanner-api-hybpddg3gsb4gzhs.southafricanorth-01.azurewebsites.net/api/health` |
 
 ---
