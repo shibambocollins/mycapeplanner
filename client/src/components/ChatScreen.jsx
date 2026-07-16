@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Compass, Send, Download, Share2, Check, Bookmark, Mic } from 'lucide-react';
-import jsPDF from 'jspdf';
 import { INITIAL_CHAT } from '../data/mockData.jsx';
 import { renderFormattedText } from '../utils/renderFormattedText.jsx';
 import { sendChatMessage, saveItinerary } from '../services/api';
 
-const exportItineraryToPDF = (text) => {
+const exportItineraryToPDF = async (text) => {
+  const { default: jsPDF } = await import('jspdf');
   const doc = new jsPDF();
   const marginLeft = 15;
   const marginTop = 20;
@@ -104,9 +104,9 @@ const ChatScreen = ({ savedTrips, setSavedTrips }) => {
     }
   };
 
-  const handleExportPDF = (text) => {
+  const handleExportPDF = async (text) => {
     try {
-      exportItineraryToPDF(text);
+      await exportItineraryToPDF(text);
       showToast('PDF downloaded!');
     } catch (err) {
       console.error('PDF export error:', err);
@@ -221,7 +221,7 @@ const ChatScreen = ({ savedTrips, setSavedTrips }) => {
                     {msg.isItinerary && (
                       <div className="mt-6 pt-5 border-t border-gray-100/20 flex gap-3 flex-wrap">
                         <button
-                          onClick={() => handleExportPDF(msg.text)}
+                          onClick={() => void handleExportPDF(msg.text)}
                           className="flex items-center gap-2 px-5 py-2.5 bg-[#146B71]/10 text-[#146B71] hover:bg-[#146B71] hover:text-white rounded-xl text-sm font-bold transition-all shadow-sm"
                         >
                           <Download size={18} />

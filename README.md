@@ -1,394 +1,48 @@
-<img width="1915" height="986" alt="image" src="https://github.com/user-attachments/assets/35f0dd53-88bd-4d3b-8ac1-a78d06e974fa" />
-
-<img width="1131" height="708" alt="Frame 1" src="https://github.com/user-attachments/assets/88c0768d-65b2-43da-908e-366f0a9df04a" />
-
-<div align="center">
-
 # 🏔️ MyCapePlanner
 
-### AI-Powered Cape Town Travel Planner
+**Your Table Mountain-side trip planner, powered by AI and built like a real product.**
 
-Plan personalized Cape Town adventures with the power of Artificial Intelligence.
+Tell it what kind of Cape Town trip you want. Get back a real itinerary, a real account to keep it in, and a real PDF to take with you. No sticky notes, no fifteen browser tabs, no losing your plan the moment you accidentally close the window.
 
-Generate itineraries, discover attractions, receive travel recommendations, explore interactive maps, save trips, and export beautiful travel plans—all from one modern web application.
+## 🧭 The problem
 
----
+Planning a Cape Town trip usually looks like this: a blog tab, a Google Maps tab, a TripAdvisor tab, and a Notes app slowly turning into chaos. Ask a generic AI chatbot for help and it'll happily suggest places, but the moment you refresh, it forgets everything. Worse, plenty of "quick and easy" AI travel demos shove the API key straight into the browser, which is a great way to let someone else run up your bill.
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
-[![Express](https://img.shields.io/badge/Express.js-4-000000?style=for-the-badge&logo=express)](https://expressjs.com/)
-[![Node.js](https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Sequelize](https://img.shields.io/badge/Sequelize-ORM-52B0E7?style=for-the-badge&logo=sequelize)](https://sequelize.org/)
-[![SQLite](https://img.shields.io/badge/SQLite-Development-003B57?style=for-the-badge&logo=sqlite)](https://sqlite.org/)
-[![Azure SQL](https://img.shields.io/badge/Azure%20SQL-Production-0078D4?style=for-the-badge&logo=microsoftazure)](https://azure.microsoft.com/)
-[![Azure App Service](https://img.shields.io/badge/Azure-App_Service-0078D4?style=for-the-badge&logo=microsoftazure)](https://azure.microsoft.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://vercel.com/)
-[![Gemini API](https://img.shields.io/badge/Google-Gemini_AI-4285F4?style=for-the-badge&logo=google)](https://ai.google.dev/)
+## 💡 The solution
 
-</div>
+MyCapePlanner takes the chatbot idea and gives it the things a real app needs to survive contact with an actual user:
 
----
+- 🗺️ A conversational planner powered by Gemini that turns "I want a chill weekend near the Waterfront" into a structured, day-by-day itinerary
+- 🔐 Real accounts, so your plans are tied to you and still there tomorrow
+- 🛡️ The Gemini API key locked away server-side, never exposed to the browser
+- 📄 A genuine "Download PDF" button that produces an actual PDF, not just a toast that says "coming soon"
 
-# Live Demo
+## ✨ Key features
 
-## Frontend
+- Chat-based itinerary planning for Cape Town, backed by the Gemini API
+- Signup/login with bcrypt-hashed passwords and JWT-based sessions
+- Itineraries saved per-user in a database, not just in React state
+- One-click PDF export of a saved itinerary via `jspdf`
+- Swappable database backend (SQLite out of the box, MySQL or Azure SQL with a config change)
 
-> **Live Application**
+## 🔄 What changed from the original Gemini single-file version
 
-```
-PASTE YOUR VERCEL URL HERE
-```
+- Split the one-file component into `client/src/components/*`, `data/`, `services/`, `utils/`.
+- Auth is real now: bcrypt-hashed passwords, JWT sessions, backed by a database (SQLite by default).
+- The Gemini API call moved server-side (`server/controllers/chatController.js`), so the API key never reaches the browser.
+- Saved itineraries persist to the database per-user instead of living only in React state.
+- "Download PDF" actually generates a PDF now (via `jspdf`) instead of just showing a toast.
 
-## Backend API
+## 🧱 Tech stack
 
-```
-PASTE YOUR AZURE APP SERVICE URL HERE
-```
+- **Frontend**: React, Vite, Tailwind CSS
+- **Backend**: Express, Sequelize
+- **Auth**: bcrypt, JWT
+- **Database**: SQLite by default, swappable for MySQL or Azure SQL
+- **AI**: Google Gemini API
+- **PDF export**: jsPDF
 
-Example:
-
-```
-https://mycapeplanner-api.azurewebsites.net/api/health
-```
-
----
-
-# Screenshots
-
-> Replace these placeholders with screenshots after deployment.
-
-| Dashboard |
-|------------|
-| ![](docs/dashboard.png) |
-
-| AI Chat |
-|------------|
-| ![](docs/chat.png) |
-
-| Interactive Map |
-|------------|
-| ![](docs/map.png) |
-
-| Saved Trips |
-|------------|
-| ![](docs/saved-trips.png) |
-
-| Login |
-|------------|
-| ![](docs/login.png) |
-
----
-
-# System Architecture
-
-Insert your architecture diagram here.
-
-```text
-docs/architecture.png
-```
-
-```markdown
-![Architecture](docs/architecture.png)
-```
-
----
-
-# Table of Contents
-
-- Project Overview
-- Features
-- Technology Stack
-- System Architecture
-- Application Workflow
-- Folder Structure
-- Authentication
-- AI Integration
-- Database
-- REST API
-- Installation
-- Environment Variables
-- Local Development
-- Deployment
-- Security
-- Performance
-- Error Handling
-- Known Limitations
-- Future Improvements
-- Lessons Learned
-- Author
-
----
-
-# Project Overview
-
-MyCapePlanner is an AI-powered travel planning web application that helps users discover Cape Town through intelligent itinerary generation and personalized recommendations.
-
-Instead of manually searching through dozens of websites, users simply describe what they want, for example:
-
-> "Plan a romantic weekend in Cape Town with a budget of R3500."
-
-or
-
-> "I have one day and R800. What should I do?"
-
-The AI assistant generates a customized itinerary based on the user's requirements.
-
-The application combines Artificial Intelligence with interactive maps, saved itineraries, authentication, PDF export, and modern responsive design to create a complete travel planning experience.
-
-The project demonstrates the integration of cloud technologies, REST APIs, authentication, database management, and generative AI into a full-stack web application.
-
----
-
-# Features
-
-## AI Travel Assistant
-
-- AI-powered itinerary generation
-- Cape Town tourism recommendations
-- Budget-aware suggestions
-- Restaurant recommendations
-- Accommodation suggestions
-- Attractions
-- Activities
-- Hidden gems
-- Family trips
-- Adventure planning
-- Food recommendations
-- Nightlife suggestions
-- General Cape Town travel assistance
-
----
-
-## Interactive Maps
-
-- Interactive Leaflet map
-- Tourist attractions
-- Attraction markers
-- Easy navigation
-- Location discovery
-
----
-
-##  Authentication
-
-- User Registration
-- User Login
-- JWT Authentication
-- Password Hashing using bcrypt
-- Protected Routes
-
----
-
-##  Saved Itineraries
-
-Authenticated users can
-
-- Save generated itineraries
-- View saved itineraries
-- Access previous saved trips
-
----
-
-##  Export
-
-Users can export generated itineraries as professionally formatted PDF documents.
-
----
-
-## Voice Input
-
-Supports browser speech recognition allowing users to dictate travel requests instead of typing.
-
----
-
-## Responsive Design
-
-Fully responsive across
-
-- Desktop
-- Laptop
-- Tablet
-- Mobile devices
-
----
-
-##  Modern User Interface
-
-- Clean dashboard
-- Smooth animations
-- Responsive layouts
-- Interactive cards
-- Modern typography
-- Beautiful color palette inspired by Cape Town
-
----
-
-## Cloud Ready
-
-Application is designed for cloud deployment using
-
-- Azure App Service
-- Azure SQL Database
-- GitHub Actions
-- Vercel
-
----
-
-# Project Objectives
-
-The objectives of this project are to
-
-- Demonstrate full-stack web development skills
-- Integrate Generative AI into a real-world application
-- Showcase cloud deployment using Microsoft Azure
-- Build a responsive modern web application
-- Implement secure authentication
-- Demonstrate REST API development
-- Showcase database portability using Sequelize ORM
-- Build a portfolio-quality software engineering project
-
----
-
-# Target Users
-
-The application is intended for
-
-- Tourists visiting Cape Town
-- Local residents exploring the city
-- International visitors
-- Students
-- Families
-- Solo travelers
-- Couples
-- Adventure seekers
-- Food lovers
-- Weekend travelers
-
----
-
-# Why MyCapePlanner?
-
-Planning a trip often involves switching between multiple websites for attractions, accommodation, restaurants, maps, and travel advice.
-
-MyCapePlanner centralizes this experience into a single AI-powered platform where users can generate personalized itineraries in seconds.
-
-Instead of static travel guides, users receive dynamic recommendations tailored to their interests, available time, and budget.
-
-The application demonstrates how Artificial Intelligence can simplify travel planning while providing an engaging and user-friendly experience.
-
----
-
-# 🛠️ Technology Stack
-
-MyCapePlanner follows a modern full-stack architecture built with scalable and cloud-ready technologies.
-
-## Frontend
-
-| Technology | Purpose |
-|------------|---------|
-| React | Component-based user interface |
-| React Router | Client-side routing |
-| Vite | Fast development server and build tool |
-| Tailwind CSS | Utility-first styling |
-| Leaflet | Interactive maps |
-| Lucide React | Modern icon library |
-| jsPDF | PDF itinerary generation |
-| Fetch API | HTTP communication with backend |
-
----
-
-## Backend
-
-| Technology | Purpose |
-|------------|---------|
-| Node.js | JavaScript runtime |
-| Express.js | REST API framework |
-| Sequelize ORM | Database abstraction |
-| JWT | Authentication |
-| bcrypt | Password hashing |
-| dotenv | Environment configuration |
-| CORS | Cross-origin resource sharing |
-
----
-
-## Artificial Intelligence
-
-| Technology | Purpose |
-|------------|---------|
-| Google Gemini API | AI itinerary generation |
-| Gemini 3.x Preview Model | Natural language travel planning |
-
-The AI assistant understands natural language prompts and generates personalized travel itineraries for Cape Town based on user preferences, budget, duration, and interests.
-
-Examples include:
-
-- Plan a romantic weekend.
-- Budget-friendly family trip.
-- Best restaurants near the Waterfront.
-- Adventure activities under R1000.
-- Hidden gems around Cape Town.
-- One-day itinerary.
-
----
-
-## Database
-
-Development
-
-- SQLite
-
-Production
-
-- Azure SQL Database
-
-Using Sequelize ORM allows the application to switch between database providers without requiring major code changes.
-
----
-
-## Cloud Services
-
-| Service | Provider |
-|---------|----------|
-| Frontend Hosting | Vercel |
-| Backend Hosting | Azure App Service |
-| Database | Azure SQL Database |
-| CI/CD | GitHub Actions |
-| Source Control | GitHub |
-
----
-
-# System Architecture
-
-The application follows a client-server architecture.
-
-```text
-                        +------------------------+
-                        |        User            |
-                        +-----------+------------+
-                                    |
-                                    |
-                          React / Vite Frontend
-                                    |
-                       HTTPS REST API Requests
-                                    |
-                                    ▼
-                      Express.js Backend API
-                                    |
-             +----------------------+----------------------+
-             |                                             |
-             ▼                                             ▼
-      Gemini AI API                              Azure SQL Database
-             |                                             |
-             +----------------------+----------------------+
-                                    |
-                             JSON Response
-                                    |
-                             React Frontend
-```
-
----
-
-# Project Structure
+## 📁 Project structure
 
 ```
 mycapeplanner/

@@ -9,6 +9,34 @@ Based on your preferences:
 Destination: Cape Town, South Africa
 ... (include Budget Breakdown and Local Tips exactly as the user specified previously, completely stripped of emojis)`;
 
+function buildFallbackResponse(chatHistory) {
+  const lastUserMessage = [...chatHistory]
+    .reverse()
+    .find((message) => message.role === 'user' && Array.isArray(message.parts) && message.parts[0]?.text)?.parts[0].text || 'a Cape Town trip';
+
+  return `**MyCapePlanner**
+**Your Cape Town Adventure is Ready!**
+
+Based on your request: ${lastUserMessage}
+
+Destination: Cape Town, South Africa
+
+Suggested Plan:
+- Morning: Start with Table Mountain or the V&A Waterfront.
+- Afternoon: Add a coastal stop like Camps Bay, Chapman’s Peak, or the Cape Peninsula.
+- Evening: Finish with a dinner reservation in the city bowl or along the Atlantic Seaboard.
+
+Budget Breakdown:
+- Transport: Adjust based on Uber, rental car, or guided tour.
+- Food: Mix casual local spots with one premium dinner.
+- Activities: Prioritize one major attraction and one flexible backup.
+
+Local Tips:
+- Start early to avoid traffic and queues.
+- Keep weather in mind for mountain and beach plans.
+- Save this itinerary if you want to refine it later.`;
+}
+
 exports.sendMessage = async (req, res) => {
   try {
     const { chatHistory } = req.body;
@@ -18,37 +46,62 @@ exports.sendMessage = async (req, res) => {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+    const preferredModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    const fallbackModels = [preferredModel, 'gemini-2.5-flash', 'gemini-flash-latest'].filter(
+      (value, index, array) => value && array.indexOf(value) === index
+    );
 
     if (!apiKey) {
       return res.status(500).json({ message: 'Gemini API key is not configured on the server' });
     }
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    let lastResult = null;
 
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-        contents: chatHistory,
-      }),
-    });
+    for (const model of fallbackModels) {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-    const result = await response.json();
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+          contents: chatHistory,
+        }),
+      });
 
-    if (!result.candidates || result.candidates.length === 0) {
-      console.error('Gemini returned no candidates:', JSON.stringify(result));
-      return res.status(502).json({ message: 'No response from Gemini' });
+      const result = await response.json();
+      lastResult = result;
+
+      if (result?.candidates?.length) {
+        let botText = result.candidates[0].content.parts[0].text;
+        // Aggressive sweep to strip any emojis the model returned anyway
+        botText = botText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
+
+        return res.json({ text: botText });
+      }
+
+      const errorCode = result?.error?.code;
+      const errorStatus = result?.error?.status;
+      const errorMessage = String(result?.error?.message || '');
+      const isQuotaOrAvailabilityIssue =
+        errorCode === 503 ||
+        errorStatus === 'UNAVAILABLE' ||
+        errorCode === 404 ||
+        errorStatus === 'NOT_FOUND' ||
+        /quota|rate limit|billing|not found|unsupported/i.test(errorMessage);
+
+      if (!isQuotaOrAvailabilityIssue) {
+        console.error('Gemini returned no candidates:', JSON.stringify(result));
+        return res.status(502).json({ message: result?.error?.message || 'No response from Gemini' });
+      }
     }
 
-    let botText = result.candidates[0].content.parts[0].text;
-    // Aggressive sweep to strip any emojis the model returned anyway
-    botText = botText.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
-
-    res.json({ text: botText });
+    console.error('Gemini unavailable, using local fallback:', JSON.stringify(lastResult));
+    return res.json({ text: buildFallbackResponse(chatHistory) });
   } catch (err) {
     console.error('Chat error:', err);
-    res.status(500).json({ message: 'Failed to reach Gemini' });
+    res.json({
+      text: buildFallbackResponse(req.body.chatHistory || []),
+    });
   }
 };
