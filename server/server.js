@@ -35,13 +35,11 @@ app.use('/api/chat', chatRoutes);
 
 const PORT = process.env.PORT || 5000;
 
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 sequelize
   .sync()
-  .then(() => {
-    console.log('Database synced');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
+  .then(() => console.log('Database synced'))
   .catch((err) => {
     console.error('Failed to sync database:', err);
-    process.exit(1);
   });
