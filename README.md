@@ -42,7 +42,7 @@ This starts on `http://localhost:5000` and creates `database.sqlite` automatical
 
 The DB layer is Sequelize, so switching dialects is a config change, not a rewrite:
 
-- **MySQL**: `npm install mysql2`, then set `DB_DIALECT=mysql` and the `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` vars in `.env`.
+- **MySQL**: `npm install mysql2`, then set `DB_DIALECT=mysql` and the `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` vars in `.env`. vv
 - **Azure SQL**: `npm install tedious`, then set `DB_DIALECT=mssql` and the same connection vars, pointing at your Azure SQL server.
 
 No model or controller code needs to change — `config/db.js` handles the dialect switch.
