@@ -82,417 +82,138 @@ mycapeplanner/
 └── .gitignore
 ```
 
----
+## 🔀 Application workflow
 
-#  Application Workflow
+**User authentication**
 
-## User Authentication
-
-```text
-User
-   │
-   ▼
-Register/Login
-   │
-   ▼
-Express API
-   │
-   ▼
-Validate credentials
-   │
-   ▼
-Hash Password (bcrypt)
-   │
-   ▼
-Generate JWT
-   │
-   ▼
-Authenticated Session
+```
+User → Register/Login → Express API → Validate credentials
+→ Hash password (bcrypt) → Generate JWT → Authenticated session
 ```
 
----
+**AI chat flow**
 
-## AI Chat Flow
-
-```text
-User Prompt
-
-↓
-
-React Frontend
-
-↓
-
-Express REST API
-
-↓
-
-Gemini API
-
-↓
-
-Generated Itinerary
-
-↓
-
-Frontend Display
-
-↓
-
-(Optional)
-
-Save Itinerary
-
-↓
-
-Database
+```
+User prompt → React frontend → Express REST API → Gemini API
+→ Generated itinerary → Frontend display → (optional) Save → Database
 ```
 
----
+**Saved itinerary flow**
 
-## Saved Itinerary Flow
-
-```text
-User
-
-↓
-
-AI Generates Trip
-
-↓
-
-User clicks "Save"
-
-↓
-
-Backend validates JWT
-
-↓
-
-Express API
-
-↓
-
-Sequelize ORM
-
-↓
-
-Database
-
-↓
-
-Saved Itinerary
+```
+User → AI generates trip → User clicks "Save" → Backend validates JWT
+→ Express API → Sequelize ORM → Database → Saved itinerary
 ```
 
----
+## 🔐 Authentication
 
-#  Authentication
+Authentication is implemented using JSON Web Tokens (JWT):
 
-Authentication is implemented using JSON Web Tokens (JWT).
+- User registration and login
+- Protected API routes with token validation middleware
+- Stateless sessions
 
-Features include:
+Passwords are never stored in plain text — each one is hashed with bcrypt before being saved. After a successful login, the backend issues a signed JWT that's included on every subsequent authenticated request.
 
-- User Registration
-- User Login
-- Protected API routes
-- Secure password hashing with bcrypt
-- Stateless authentication
-- Token validation middleware
+## 🤖 AI integration
 
-Passwords are never stored in plain text.
-
-Each password is hashed using bcrypt before being stored in the database.
-
-After successful authentication, the backend generates a signed JWT which is included in future authenticated requests.
-
----
-
-#  Artificial Intelligence Integration
-
-MyCapePlanner integrates Google's Gemini API to generate personalized travel recommendations.
-
-The AI understands conversational language instead of requiring users to fill out long forms.
+MyCapePlanner integrates Google's Gemini API to generate personalized travel recommendations. The AI understands conversational language instead of requiring users to fill out long forms.
 
 Example prompts:
 
 ```
 Plan a romantic weekend in Cape Town.
-```
-
-```
 I have R1500 for two days.
-```
-
-```
 Best beaches for families.
-```
-
-```
 Hidden gems around Cape Town.
-```
-
-```
 Best restaurants near Camps Bay.
 ```
 
 The backend sends the user's prompt to Gemini and returns the generated itinerary to the frontend.
 
----
+**Why Gemini?** It offers natural language understanding, context-aware responses, and flexible itinerary generation, so users get dynamically generated recommendations tailored to their request instead of a fixed list of hardcoded travel packages.
 
-## Why Gemini?
+**What the chatbot can help with:** attractions, restaurants, cafés, beaches, museums, adventure activities, hiking, wine farms, family trips, budget planning, luxury travel, weekend itineraries, food recommendations, accommodation suggestions, safety tips, and general Cape Town tourism advice.
 
-Gemini provides:
+## 🗄️ Database design
 
-- Natural language understanding
-- Context-aware responses
-- Flexible itinerary generation
-- General tourism assistance
-- Travel recommendations
-- Activity suggestions
-
-Instead of hardcoded travel packages, users receive dynamically generated recommendations tailored to their requests.
-
----
-
-## AI Prompt Processing
-
-```text
-User Prompt
-
-↓
-
-Validate Request
-
-↓
-
-Construct Prompt
-
-↓
-
-Gemini API
-
-↓
-
-Generate Response
-
-↓
-
-Format Output
-
-↓
-
-Return to Frontend
-```
-
----
-
-## AI Capabilities
-
-The chatbot can assist users with:
-
-- Attractions
-- Restaurants
-- Cafés
-- Beaches
-- Museums
-- Adventure activities
-- Hiking
-- Wine farms
-- Family trips
-- Budget planning
-- Luxury travel
-- Weekend itineraries
-- Food recommendations
-- Accommodation suggestions
-- Safety tips
-- Local travel advice
-- Cape Town tourism information
-
----
-
-# Database Design
-
-The application currently stores:
-
-## Users
+**Users**
 
 | Field | Description |
 |--------|-------------|
-| id | Primary Key |
+| id | Primary key |
 | username | User's display name |
 | email | Unique email |
-| password | bcrypt hashed password |
+| password | bcrypt-hashed password |
 | createdAt | Record creation date |
 | updatedAt | Last update |
 
----
-
-## Saved Itineraries
+**Saved itineraries**
 
 | Field | Description |
 |--------|-------------|
-| id | Primary Key |
+| id | Primary key |
 | title | Generated title (optional) |
 | itinerary | Generated itinerary text |
 | userId | Owner |
 | createdAt | Saved date |
 
-Relationships
+Relationship: one user has many saved itineraries.
+
+## 🔌 REST API overview
 
 ```
-User
-
-1
-
-↓
-
-Many
-
-↓
-
-Saved Itineraries
+POST /api/auth/register     Creates a new user account
+POST /api/auth/login        Authenticates an existing user
+POST /api/chat              Generates an AI response via Gemini
+GET  /api/itineraries        Returns all saved itineraries for the authenticated user
+POST /api/itineraries        Saves a generated itinerary
+GET  /api/health             Returns application status, e.g. { "status": "ok" }
 ```
 
----
+## 🔀 Database portability
 
-#  REST API Overview
+A major design decision was building on Sequelize ORM rather than talking to a specific database directly. That buys:
 
-## Authentication
-
-```
-POST /api/auth/register
-```
-
-Creates a new user account.
-
----
-
-```
-POST /api/auth/login
-```
-
-Authenticates an existing user.
-
----
-
-## Chat
-
-```
-POST /api/chat
-```
-
-Generates AI responses using the Gemini API.
-
----
-
-## Itineraries
-
-```
-GET /api/itineraries
-```
-
-Returns all saved itineraries for the authenticated user.
-
----
-
-```
-POST /api/itineraries
-```
-
-Saves a generated itinerary.
-
----
-
-## Health Check
-
-```
-GET /api/health
-```
-
-Returns the application status.
-
-Example response:
-
-```json
-{
-  "status": "ok"
-}
-```
-
----
-
-#  Database Portability
-
-A major design decision was using Sequelize ORM.
-
-Benefits include:
-
-- SQLite for local development
-- Azure SQL in production
-- MySQL compatibility
+- SQLite for local development, Azure SQL or MySQL in production
 - Minimal code changes when switching databases
 - Reduced vendor lock-in
-- Cleaner database models
-- Easier future scalability
+- Cleaner models and easier future scaling
 
-This approach allows the application to evolve without rewriting database logic.
+No model or controller code needs to change to switch dialects — `config/db.js` handles it.
 
----
+## 🚀 Getting started
 
-#  Getting Started
-
-Follow the steps below to run MyCapePlanner locally.
-
----
-
-# 📋 Prerequisites
-
-Ensure the following software is installed on your machine.
+### Prerequisites
 
 | Software | Version |
 |-----------|---------|
-| Node.js | 20+ (22 LTS Recommended) |
+| Node.js | 20+ (22 LTS recommended) |
 | npm | Latest |
 | Git | Latest |
-| Visual Studio Code | Recommended |
-| Azure Account *(optional)* | Production deployment |
-| Google AI Studio API Key | Required |
+| Google AI Studio API key | Required |
+| Azure account | Optional, for production deployment |
 
----
-
-# Clone the Repository
+### Clone the repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/mycapeplanner.git
-
 cd mycapeplanner
 ```
 
----
-
-#  Install Dependencies
-
-## Frontend
+### Install dependencies
 
 ```bash
 cd client
 npm install
-```
 
----
-
-## Backend
-
-```bash
 cd ../server
 npm install
 ```
 
----
+### Environment variables
 
-#  Environment Variables
-
-Create a `.env` file inside the **server** directory.
+Create a `.env` file inside the **server** directory:
 
 ```env
 # Server
@@ -503,11 +224,11 @@ CLIENT_ORIGIN=http://localhost:5173
 JWT_SECRET=your_super_secret_key
 JWT_EXPIRES_IN=7d
 
-# SQLite (Development)
+# SQLite (development)
 DB_DIALECT=sqlite
 DB_STORAGE=./database.sqlite
 
-# Azure SQL (Production)
+# Azure SQL (production)
 DB_HOST=
 DB_PORT=
 DB_NAME=
@@ -519,436 +240,126 @@ GEMINI_API_KEY=YOUR_API_KEY
 GEMINI_MODEL=gemini-3-flash-preview
 ```
 
----
-
-# Running the Application
-
-## Start Backend
+### Run it
 
 ```bash
 cd server
-
 npm run dev
 ```
 
-Server
-
-```
-http://localhost:5000
-```
-
----
-
-## Start Frontend
+Backend runs at `http://localhost:5000`.
 
 ```bash
 cd client
-
 npm run dev
 ```
 
-Application
+Frontend runs at `http://localhost:5173`. Open it, sign up with a real email/password, and start planning your trip.
 
-```
-http://localhost:5173
-```
+### Health check
 
----
-
-#  Health Check
-
-After starting the backend
-
-```
-GET
-
-/api/health
-```
-
-Expected response
+Once the backend is running, `GET /api/health` should return:
 
 ```json
-{
-  "status":"ok"
-}
+{ "status": "ok" }
 ```
 
----
+## ☁️ Deployment
 
-#  Deployment
+- **Frontend**: Vercel — static asset hosting, HTTPS, automatic deployments
+- **Backend**: Azure App Service — REST API, authentication, AI communication, database operations
+- **Database**: SQLite in development, Azure SQL in production
 
-The application is designed for cloud deployment.
+## 🔁 Continuous integration & deployment
 
-## Frontend
-
-Hosted using
-
-- Vercel
-
-Responsibilities
-
-- Static asset hosting
-- React application
-- HTTPS
-- Automatic deployments
-
----
-
-## Backend
-
-Hosted using
-
-- Azure App Service
-
-Responsibilities
-
-- REST API
-- Authentication
-- AI communication
-- Database operations
-
----
-
-## Database
-
-Production
-
-Azure SQL Database
-
-Development
-
-SQLite
-
----
-
-# Continuous Integration & Deployment
-
-GitHub Actions automatically builds and deploys the backend whenever changes are pushed to the main branch.
-
-Pipeline
+GitHub Actions builds and deploys the backend automatically whenever changes are pushed to `main`:
 
 ```
-Developer
-
-↓
-
-GitHub Push
-
-↓
-
-GitHub Actions
-
-↓
-
-Build
-
-↓
-
-Deploy
-
-↓
-
-Azure App Service
-
-↓
-
-Live API
+Developer → GitHub push → GitHub Actions → Build → Deploy → Azure App Service → Live API
 ```
 
-Benefits
+## 🛡️ Security
 
-- Automated deployment
-- Version control
-- Continuous delivery
-- Faster updates
-- Reliable releases
+- JWT authentication with protected routes and token validation middleware
+- Passwords hashed with bcrypt, never stored in plain text
+- Sequelize ORM uses parameterized queries, protecting against SQL injection
+- Sensitive values (JWT secret, database credentials, Gemini API key) live in environment variables and are never committed to source control
+- CORS configured to restrict requests to trusted frontend origins
 
----
+## ⚡ Performance considerations
 
-# Security
+- Component-based React architecture with fast Vite bundling
+- Sequelize connection pooling and minimal, lazy database queries
+- Lightweight, responsive UI
 
-Several security measures have been implemented throughout the application.
+## 🧯 Error handling
 
-## Authentication
+The application handles common failure cases gracefully — invalid login credentials, unauthorized access, invalid JWTs, Gemini API failures, database connection issues, missing input fields, and network failures — so users get meaningful feedback instead of a crash.
 
-- JWT Authentication
-- Protected routes
-- Token validation middleware
+## ⚠️ Known limitations
 
----
+This is intentionally scoped as an MVP:
 
-## Password Security
+- Chat history isn't persisted between login sessions; users start a fresh AI conversation after signing in
+- Saved itineraries can be viewed but not yet edited or deleted
+- AI responses depend on the availability of Google's Gemini API, and an internet connection is required
+- Voice input depends on the browser's Speech Recognition API and may not work in every browser
+- No offline functionality
+- Cape Town tourism only, for now
+- No automated unit or integration tests yet
+- No password reset or email verification
+- User profile management is limited
 
-Passwords are never stored in plain text.
+## 🧪 Gemini API considerations
 
-Each password is securely hashed using
+This project currently integrates with a Gemini preview model, which means:
 
-- bcrypt
-
-before being persisted.
-
----
-
-## Database
-
-Using Sequelize ORM provides protection against SQL Injection by utilizing parameterized queries instead of raw SQL statements.
-
----
-
-## Environment Variables
-
-Sensitive configuration values are stored inside environment variables.
-
-Examples
-
-- JWT Secret
-- Database credentials
-- Gemini API Key
-
-These values should never be committed to source control.
-
----
-
-## CORS
-
-The backend uses CORS configuration to restrict requests to trusted frontend origins.
-
----
-
-#  Performance Considerations
-
-Several design decisions improve overall application performance.
-
-- Component-based React architecture
-- Fast Vite bundling
-- Efficient REST communication
-- Sequelize connection pooling
-- Lazy API requests
-- Minimal database queries
-- Lightweight UI
-- Responsive layouts
-
----
-
-#  Error Handling
-
-The application gracefully handles common errors.
-
-Examples
-
-- Invalid login credentials
-- Unauthorized access
-- Invalid JWT
-- Gemini API failures
-- Database connection failures
-- Missing input fields
-- Network failures
-
-Users receive meaningful feedback instead of application crashes.
-
----
-
-# Known Limitations
-
-The current implementation intentionally focuses on the project's MVP scope.
-
-Current limitations include:
-
-- Chat history is not persisted between login sessions.
-- Users begin with a new AI conversation after signing in.
-- Saved itineraries can currently be viewed but cannot be edited or deleted.
-- AI responses depend on the availability of Google's Gemini API.
-- Internet connectivity is required for AI features.
-- Voice input depends on the browser's Speech Recognition API and may not be supported by all browsers.
-- Offline functionality is not available.
-- The application currently supports Cape Town tourism only.
-- Automated unit and integration tests have not yet been implemented.
-- Password reset and email verification are not currently supported.
-- User profile management is limited.
-
----
-
-#  Gemini API Considerations
-
-This project currently integrates with a Gemini preview model.
-
-Preview models are intended for development and experimentation.
-
-As a result:
-
-- Usage quotas may be limited.
-- Rate limits may be lower than production models.
-- Responses may vary as the model evolves.
-- Temporary service interruptions may occur.
-- API behavior may change between preview releases.
+- Usage quotas and rate limits may be lower than production models
+- Responses may vary as the model evolves
+- Temporary service interruptions or behavior changes between preview releases are possible
 
 If API limits are reached, itinerary generation may temporarily fail until the quota resets.
 
----
+## 🗺️ Future improvements
 
-# Future Improvements
+- Persistent AI conversation history, editing and deleting saved itineraries
+- User profile management, password reset, email verification
+- Favorite attractions and AI memory across sessions
+- Weather integration, Google Maps directions, public transport recommendations
+- Accommodation booking, restaurant reservations, event recommendations
+- Multi-city support and offline itinerary access
+- Budget tracking, calendar integration, image generation, AI trip optimization
+- Mobile app with push notifications, dark mode
+- Automated testing, Docker and Kubernetes support
 
-Potential future enhancements include:
+## 📚 Lessons learned
 
-- Persistent AI conversation history
-- Edit itineraries
-- Delete itineraries
-- User profile management
-- Password reset
-- Email verification
-- Favorite attractions
-- AI memory across sessions
-- Weather integration
-- Google Maps Directions
-- Public transport recommendations
-- Accommodation booking
-- Restaurant reservations
-- Event recommendations
-- Multi-city support
-- Offline itinerary access
-- Image generation
-- AI trip optimization
-- Budget tracking
-- Calendar integration
-- Mobile application
-- Push notifications
-- Dark mode
-- Automated testing
-- Docker support
-- Kubernetes deployment
+This project provided practical experience in full-stack development, REST API design, cloud deployment with Microsoft Azure, CI/CD, JWT authentication, database design with Sequelize, AI integration and prompt engineering, and frontend/backend architecture more broadly.
 
----
+## 🤝 Contributing
 
-# Lessons Learned
+Contributions are welcome:
 
-This project provided valuable practical experience in:
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit your changes: `git commit -m "Add new feature"`
+4. Push your branch: `git push origin feature/new-feature`
+5. Open a pull request
 
-- Full-stack application development
-- REST API design
-- Cloud deployment with Microsoft Azure
-- Continuous Integration
-- Authentication using JWT
-- Database design
-- Sequelize ORM
-- AI integration
-- Prompt engineering
-- Frontend architecture
-- Backend architecture
-- API consumption
-- Secure application development
-- Responsive interface design
-- Git and GitHub workflows
+## 🙏 Acknowledgements
 
----
+Thanks to Google Gemini, Microsoft Azure, Vercel, React, Express.js, Sequelize, Tailwind CSS, Leaflet, Lucide React, jsPDF, and the open source community.
 
-# Contributing
 
-Contributions are welcome.
 
-If you would like to improve MyCapePlanner:
+## 📄 License
 
-1. Fork the repository.
-
-2. Create a feature branch.
-
-```bash
-git checkout -b feature/new-feature
-```
-
-3. Commit your changes.
-
-```bash
-git commit -m "Add new feature"
-```
-
-4. Push your branch.
-
-```bash
-git push origin feature/new-feature
-```
-
-5. Open a Pull Request.
-
----
-
-#  Portfolio Highlights
-
-This project demonstrates proficiency in:
-
-- Full-Stack Development
-- React
-- Express.js
-- Node.js
-- REST APIs
-- Authentication
-- Azure Cloud
-- SQL Databases
-- Sequelize ORM
-- Artificial Intelligence Integration
-- Responsive Design
-- GitHub Actions
-- CI/CD
-- Modern JavaScript
-- Cloud Deployment
-
----
-
-#  Acknowledgements
-
-Special thanks to:
-
-- Google Gemini API
-- Microsoft Azure
-- Vercel
-- React
-- Express.js
-- Sequelize
-- Tailwind CSS
-- Leaflet
-- Lucide React
-- jsPDF
-- The Open Source Community
-
----
-
-# Author
-
-**Collins Shibambo**
-
-Application Developer | Full-Stack Developer | Cloud Enthusiast
-
-LinkedIn
-
-> Add your LinkedIn profile
-
-GitHub
-
-> https://github.com/shibambocollins
-
-Portfolio
-
-> Add portfolio website
-
-Email
-
-> Add professional email
-
----
-
-#  License
-
-This project is currently not licensed.
-
-If open sourcing for public contributions, consider adding an MIT License in the future.
+This project is currently not licensed. Consider adding an MIT License if you plan to open it up for public contributions.
 
 ---
 
 <div align="center">
 
-##  If you found this project interesting, consider giving it a star!
-
-Thank you for visiting **MyCapePlanner**.
-
-Built with using React, Express, Azure, and Google Gemini.
+If you found this project interesting, consider giving it a star! Thanks for visiting MyCapePlanner, built with React, Express, Azure, and Google Gemini.
 
 </div>
