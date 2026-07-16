@@ -10,7 +10,7 @@ if (dialect === 'sqlite') {
     storage: process.env.DB_STORAGE || './database.sqlite',
     logging: false,
   });
-} else {
+}  else {
   // 'mysql' or 'mssql' (Azure SQL uses 'mssql')
   sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -24,11 +24,19 @@ if (dialect === 'sqlite') {
         dialect === 'mssql'
           ? {
               options: {
-                encrypt: true, // required by Azure SQL
+                encrypt: true,
                 trustServerCertificate: false,
+                connectTimeout: 60000, // wait up to 60s for serverless DB to wake up
+                requestTimeout: 60000,
               },
             }
           : {},
+      retry: {
+        max: 3, // retry a failed connection up to 3 times
+        match: [/ETIMEOUT/, /ConnectionError/, /ESOCKET/],
+        backoffBase: 3000,
+        backoffExponent: 1.5,
+      },
       logging: false,
     }
   );
