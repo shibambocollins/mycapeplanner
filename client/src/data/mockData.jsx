@@ -52,3 +52,8 @@ export const MAP_ATTRACTIONS = [
 ];
 
 export const CAPE_TOWN_CENTER = { lat: -33.9575, lng: 18.4241 };
+
+export const INITIAL_CHAT = [
+  { id: 1, type: 'bot', text: "Hi there! I'm your local Cape Town companion. Are you looking to plan a trip today?", time: '10:00 AM' },
+  { id: 2, type: 'bot', component: 'quickReplies', options: ['Plan a 5-day luxury trip', 'Find a restaurant', 'Explore beaches'] },
+];
